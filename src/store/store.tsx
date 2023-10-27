@@ -1,11 +1,17 @@
-// store.ts
-import { configureStore } from "@reduxjs/toolkit";
+import { configureStore, ThunkDispatch, AnyAction } from "@reduxjs/toolkit";
+import authReducer from './slices/authSlice';
+import apiMiddleware from './middlewares/apiMiddleware';
 
 const store = configureStore({
   reducer: {
+    auth: authReducer,
+    // ... other reducers
   },
-  middleware: [],
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(apiMiddleware),
 });
 
+export type RootState = ReturnType<typeof store.getState>;
+
+export type AppDispatch = ThunkDispatch<RootState, unknown, AnyAction>;
+
 export default store;
-export type AppDispatch = typeof store.dispatch;
