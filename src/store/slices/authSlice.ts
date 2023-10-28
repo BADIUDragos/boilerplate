@@ -31,7 +31,7 @@ const authSlice = createSlice({
     });
     builder.addCase(refreshAccessToken.fulfilled, (state, action) => {
       state.accessToken = action.payload.access;
-      state.decodedAccessTokenInfo = decodeTokenAndSetDecodedInfo(action.payload.accessToken);
+      state.decodedAccessTokenInfo = decodeTokenAndSetDecodedInfo(action.payload.access);
     });
   },
 });
