@@ -1,40 +1,29 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-
-import { AuthState } from '../interfaces/authInterfaces'
-import { refreshAccessToken, login } from '../thunks/authThunks';
-
-import { decodeTokenAndSetDecodedInfo } from '../functions/decoding';  // adjust the import path
-
+import { createSlice, PayloadAction } from "@reduxjs/toolkit"
+import { AuthState, DecodedTokenState } from "../interfaces/authInterfaces";
 
 const initialState: AuthState = {
-  accessToken: null,
-  refreshToken: null,
-  decodedAccessTokenInfo: null,
-};
+    accessToken: null,
+    refreshToken: null,
+    decodedAccessTokenInfo: null,
+  };
 
 const authSlice = createSlice({
   name: 'auth',
-  initialState,
+  initialState, 
   reducers: {
-    setTokens(state, action: PayloadAction<{ accessToken: string; refreshToken: string }>) {
+    setCredentials(state, action: PayloadAction<{ accessToken: string; refreshToken: string; decodedAccessTokenInfo: DecodedTokenState | null }>) {
       state.accessToken = action.payload.accessToken;
       state.refreshToken = action.payload.refreshToken;
-      state.decodedAccessTokenInfo = decodeTokenAndSetDecodedInfo(action.payload.accessToken);
+      state.decodedAccessTokenInfo = action.payload.decodedAccessTokenInfo;
     },
-    // ... other reducers
-  },
-  extraReducers: (builder) => {
-    builder.addCase(login.fulfilled, (state, action) => {
-      state.accessToken = action.payload.access;
-      state.refreshToken = action.payload.refresh;
-      state.decodedAccessTokenInfo = decodeTokenAndSetDecodedInfo(action.payload.access);
-    });
-    builder.addCase(refreshAccessToken.fulfilled, (state, action) => {
-      state.accessToken = action.payload.access;
-      state.decodedAccessTokenInfo = decodeTokenAndSetDecodedInfo(action.payload.access);
-    });
+    logOut(state) {
+      state.accessToken = null;
+      state.refreshToken = null;
+      state.decodedAccessTokenInfo = null;
+    }
   },
 });
 
-export const { setTokens } = authSlice.actions;
-export default authSlice.reducer;
+export const { setCredentials, logOut } = authSlice.actions
+
+export default authSlice.reducer

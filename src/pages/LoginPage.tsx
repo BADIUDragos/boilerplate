@@ -1,24 +1,49 @@
 import React, { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Form, Button, Row, Col } from "react-bootstrap";
+import { Form, Button, Alert } from "react-bootstrap";
 import { useDispatch } from "react-redux";
-import { AppDispatch } from '../store/store';
+import { AppDispatch } from "../store/store";
 import FormContainer from "../components/FormContainer";
 
-import { login } from "../store/thunks/authThunks";
+import { useLoginMutation } from "../store/store";
+import { setCredentials } from "../store/slices/authSlice";
+import { decodeTokenAndSetDecodedInfo } from "../functions/decoding";
+import { getErrorDetails } from "../functions/apiErrorHandling";
+import Loader from "../components/Loader";
 
 const LoginPage: React.FC = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
+
+  const [triggerLogin, { data, error, isLoading }] = useLoginMutation();
 
   const dispatch = useDispatch<AppDispatch>();
 
-  const location = useLocation();
-  const redirect = location.search ? location.search.split("=")[1] : "/";
-
-  const submitHandler = (e: React.FormEvent) => {
+  const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
-    dispatch(login({ username, password }));
+  
+    try {
+      const results = await triggerLogin({ username, password });
+      const { status, detail } = getErrorDetails(results);
+  
+      if ('data' in results && results.data) {
+        const { access, refresh } = results.data;
+        const decodedInfo = decodeTokenAndSetDecodedInfo(access);
+        
+        dispatch(setCredentials({
+          accessToken: access,
+          refreshToken: refresh,
+          decodedAccessTokenInfo: decodedInfo,
+        }));
+      }
+  
+      if (detail) {
+        setErrorMessage(`${detail}`);
+      }
+  
+    } catch (error) {
+      console.error('Login failed:', error);
+    }
   };
 
   return (
@@ -47,14 +72,24 @@ const LoginPage: React.FC = () => {
             onChange={(e) => setPassword(e.target.value)}
           ></Form.Control>
         </Form.Group>
-        <Button type="submit" variant="primary" className="btn-block w-100 mt-3">
+        <Button
+          type="submit"
+          variant="primary"
+          className="btn-block w-100 mt-3"
+        >
           Sign In
         </Button>
       </Form>
 
-      
+      {isLoading && <Loader />}
+
+      {errorMessage && (
+        <Alert variant="danger" className="mt-3">
+          {errorMessage}
+        </Alert>
+      )}
     </FormContainer>
   );
-}
+};
 
 export default LoginPage;

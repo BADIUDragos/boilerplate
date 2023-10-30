@@ -10,9 +10,9 @@ export interface DecodedTokenState {
   permissions: string[] | null;
 }
 
-export interface RefreshResultData {
-  accessToken: string;
-  refreshToken: string;
+export interface LoginResultData {
+  access: string;
+  refresh: string;
 }
 
 export interface LoginCredentials {
