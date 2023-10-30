@@ -2,10 +2,12 @@ import { configureStore, ThunkDispatch, AnyAction } from "@reduxjs/toolkit";
 import authReducer from "./slices/authSlice";
 import apiMiddleware from "./middlewares/apiMiddleware";
 
+import { baseApi } from "./apis/baseApi";
+
 const store = configureStore({
   reducer: {
-    auth: authReducer,
-    // ... other reducers
+    [baseApi.reducerPath]: baseApi.reducer,
+    auth: authReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(apiMiddleware),
