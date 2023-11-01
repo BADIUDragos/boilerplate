@@ -1,23 +1,23 @@
 import { configureStore, ThunkDispatch, AnyAction } from "@reduxjs/toolkit";
 import authReducer from "./slices/authSlice";
-import { authApi, useLoginMutation } from './apis/authApi'
+import { authApi, useLoginMutation } from "./apis/authApi";
 import { setupListeners } from "@reduxjs/toolkit/dist/query";
 
 const store = configureStore({
   reducer: {
     [authApi.reducerPath]: authApi.reducer,
-    auth: authReducer
+    auth: authReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(authApi.middleware),
   devTools: true,
 });
 
-setupListeners(store.dispatch)
+setupListeners(store.dispatch);
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = ThunkDispatch<RootState, unknown, AnyAction>;
 
-export { useLoginMutation }
+export { useLoginMutation };
 
 export default store;

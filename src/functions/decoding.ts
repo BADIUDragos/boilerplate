@@ -1,4 +1,4 @@
-import { jwtDecode } from 'jwt-decode';
+import { jwtDecode } from "jwt-decode";
 
 export function decodeTokenAndSetDecodedInfo(token: string) {
   try {
@@ -6,7 +6,7 @@ export function decodeTokenAndSetDecodedInfo(token: string) {
     const { id, username, permissions } = decoded;
     return { id, username, permissions };
   } catch (error) {
-    console.error('Failed to decode token:', error);
+    console.error("Failed to decode token:", error);
     return null;
   }
 }

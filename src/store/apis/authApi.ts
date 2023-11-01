@@ -1,16 +1,18 @@
-import { FetchBaseQueryError, createApi } from '@reduxjs/toolkit/query/react';
+import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQuery } from "../../functions/baseQueries";
-import { LoginCredentials, LoginResultData } from "../interfaces/authInterfaces";
-import { SerializedError } from '@reduxjs/toolkit';
+import {
+  LoginCredentials,
+  LoginResultData,
+} from "../interfaces/authInterfaces";
 
 const authApi = createApi({
-  reducerPath: 'authApi',
+  reducerPath: "authApi",
   baseQuery: baseQuery,
   endpoints: (build) => ({
     login: build.mutation<LoginResultData, LoginCredentials>({
       query: (credentials: LoginCredentials) => ({
-        url: '/auth/token',
-        method: 'POST',
+        url: "/auth/token",
+        method: "POST",
         body: credentials,
       }),
     }),
@@ -18,4 +20,4 @@ const authApi = createApi({
 });
 
 export const { useLoginMutation } = authApi;
-export { authApi }
+export { authApi };
