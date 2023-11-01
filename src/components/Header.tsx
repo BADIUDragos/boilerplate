@@ -1,12 +1,10 @@
 import { Navbar, Container } from "react-bootstrap";
-import { LinkContainer } from "react-router-bootstrap";
 
 const Header = () => {
   return (
     <header>
       <Navbar bg="black" variant="dark" expand="lg" collapseOnSelect>
         <Container className="d-flex align-items-center">
-          <LinkContainer to="/">
             <Navbar.Brand>
               <img
                 src={"/images/logo.png"}
@@ -14,7 +12,6 @@ const Header = () => {
                 alt="Rolls-Royce"
               />
             </Navbar.Brand>
-          </LinkContainer>
           <Navbar.Text className="ml-3">Boilerplate APP</Navbar.Text>
         </Container>
       </Navbar>
