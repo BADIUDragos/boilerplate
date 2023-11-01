@@ -1,9 +1,7 @@
 import { Navbar, Container } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 
-type Props = {};
-
-const Header = (props: Props) => {
+const Header = () => {
   return (
     <header>
       <Navbar bg="black" variant="dark" expand="lg" collapseOnSelect>
