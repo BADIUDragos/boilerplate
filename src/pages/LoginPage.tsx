@@ -7,42 +7,41 @@ import FormContainer from "../components/FormContainer";
 import { useLoginMutation } from "../store/store";
 import { setCredentials } from "../store/slices/authSlice";
 import { decodeTokenAndSetDecodedInfo } from "../functions/decoding";
-import { getErrorDetails } from "../functions/apiErrorHandling";
 import Loader from "../components/Loader";
 
 const LoginPage: React.FC = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
+  const [errorMessage, setErrorMessage] = useState<string | undefined>(
+    undefined
+  );
 
-  const [triggerLogin, { data, error, isLoading }] = useLoginMutation();
+  const [triggerLogin, { isLoading }] = useLoginMutation();
 
   const dispatch = useDispatch<AppDispatch>();
 
   const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
-  
+
     try {
-      const results = await triggerLogin({ username, password });
-      const { status, detail } = getErrorDetails(results);
-  
-      if ('data' in results && results.data) {
-        const { access, refresh } = results.data;
+      const result = await triggerLogin({ username, password }).unwrap();
+
+      if (result) {
+        const { access, refresh } = result;
         const decodedInfo = decodeTokenAndSetDecodedInfo(access);
-        
-        dispatch(setCredentials({
-          accessToken: access,
-          refreshToken: refresh,
-          decodedAccessTokenInfo: decodedInfo,
-        }));
+
+        dispatch(
+          setCredentials({
+            accessToken: access,
+            refreshToken: refresh,
+            decodedAccessTokenInfo: decodedInfo,
+          })
+        );
+
+        setErrorMessage("");
       }
-  
-      if (detail) {
-        setErrorMessage(`${detail}`);
-      }
-  
-    } catch (error) {
-      console.error('Login failed:', error);
+    } catch (error: any) {
+      setErrorMessage(`${error.data.detail}`);
     }
   };
 
@@ -72,16 +71,19 @@ const LoginPage: React.FC = () => {
             onChange={(e) => setPassword(e.target.value)}
           ></Form.Control>
         </Form.Group>
-        <Button
-          type="submit"
-          variant="primary"
-          className="btn-block w-100 mt-3"
-        >
-          Sign In
-        </Button>
-      </Form>
 
-      {isLoading && <Loader />}
+        {isLoading ? (
+          <Loader className="mt-3" style={{ height: "40px", width: "40px" }} />
+        ) : (
+          <Button
+            type="submit"
+            variant="primary"
+            className="btn-block w-100 mt-3"
+          >
+            Sign In
+          </Button>
+        )}
+      </Form>
 
       {errorMessage && (
         <Alert variant="danger" className="mt-3">
