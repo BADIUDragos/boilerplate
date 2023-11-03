@@ -1,17 +1,8 @@
 import { RouterProvider } from "react-router-dom";
-import './bootstrap.css'
-import Header from "./components/Header";
-import router from "./router/router"
+import "./bootstrap.css";
 
-function App() {
+import router from "./router/router";
 
-  return (
-    <>
-      <Header/>
-      <RouterProvider router={router} />
-      <hr/>
-    </>
-  );
+export default function App() {
+  return <RouterProvider router={router} />;
 }
-
-export default App;

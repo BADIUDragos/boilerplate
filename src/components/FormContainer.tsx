@@ -5,12 +5,13 @@ interface IFormContainer {
   xs: number;
   md: number;
   children: React.ReactNode;
+  className?: string;
 }
 
-const FormContainer: React.FC<IFormContainer> = ({xs, md, children }) => {
+const FormContainer: React.FC<IFormContainer> = ({xs, md, children, className }) => {
   return (
     <Container>
-      <Row className="justify-content-md-center">
+      <Row className={`justify-content-md-center ` + className}>
         <Col xs={xs} md={md}>
           {children}
         </Col>
