@@ -8,7 +8,7 @@ const NotFoundPage: React.FC = () => {
 
   return (
     <>
-      <FormContainer xs={12} md={6} className="mt-5">
+      <FormContainer xs={12} md={6} className="mt-5 justify-content-md-center">
         <Card border="gray" className="mb-3">
           <Card.Header
             style={{

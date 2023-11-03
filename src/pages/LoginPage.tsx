@@ -46,7 +46,7 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <FormContainer xs={12} md={6}>
+    <FormContainer xs={12} md={6} className="justify-content-md-center">
       <h1>Sign In</h1>
 
       <Form onSubmit={submitHandler}>

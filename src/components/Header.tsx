@@ -39,7 +39,7 @@ const Header: React.FC<IHeader> = ({ className }) => {
             <Navbar.Text className="ml-3">
               Hi {decodedTokenInfo.username} !
             </Navbar.Text>
-            <Navbar.Text className="ml-3" onClick={handleLogout} style={{ cursor: 'pointer' }}>Logout</Navbar.Text>
+            <Navbar.Text className="ml-3 cursor-pointer" onClick={handleLogout}>Logout</Navbar.Text>
             </>
           ) : (
             <Nav.Link href="/login">

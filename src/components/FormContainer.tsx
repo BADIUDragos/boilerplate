@@ -11,7 +11,7 @@ interface IFormContainer {
 const FormContainer: React.FC<IFormContainer> = ({xs, md, children, className }) => {
   return (
     <Container>
-      <Row className={`justify-content-md-center ` + className}>
+      <Row className={className}>
         <Col xs={xs} md={md}>
           {children}
         </Col>
