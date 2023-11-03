@@ -19,14 +19,21 @@ const authSlice = createSlice({
         decodedAccessTokenInfo: DecodedTokenState | null;
       }>
     ) {
-      state.accessToken = action.payload.accessToken;
-      state.refreshToken = action.payload.refreshToken;
-      state.decodedAccessTokenInfo = action.payload.decodedAccessTokenInfo;
+      const { accessToken, refreshToken, decodedAccessTokenInfo } = action.payload;
+      state.accessToken = accessToken;
+      state.refreshToken = refreshToken;
+      state.decodedAccessTokenInfo = decodedAccessTokenInfo;
+      localStorage.setItem("accessToken", accessToken);
+      localStorage.setItem("refreshToken", refreshToken);
+      localStorage.setItem('decodedAccessTokenInfo', JSON.stringify(decodedAccessTokenInfo));
     },
     logOut(state) {
       state.accessToken = null;
       state.refreshToken = null;
       state.decodedAccessTokenInfo = null;
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      localStorage.removeItem("decodedAccessTokenInfo");
     },
   },
 });
