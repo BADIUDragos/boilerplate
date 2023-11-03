@@ -5,7 +5,7 @@ function Footer() {
     <footer>
       <Container>
         <Row>
-          <Col md={4}>
+          <Col md={6}>
             <span className="fw-bold">About app:</span>
             <br />
             <br />
