@@ -1,6 +1,6 @@
 import { Navbar, Container, Nav } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
-import { RootState } from "../store/store";
+import { RootState } from "../store";
 import { useDispatch, useSelector } from "react-redux";
 import { logOut } from "../store/slices/authSlice";
 
@@ -12,7 +12,7 @@ const Header: React.FC<IHeader> = ({ className }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate()
   const decodedTokenInfo = useSelector(
-    (state: RootState) => state.auth.decodedAccessTokenInfo
+    (state: RootState) => state.auth.userInfo
   );
 
   const handleLogout = () => {

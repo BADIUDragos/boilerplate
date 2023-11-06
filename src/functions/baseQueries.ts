@@ -1,6 +1,6 @@
 import { fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { setCredentials, logOut } from "../store/slices/authSlice";
-import { RootState } from "../store/store";
+import { RootState } from "../store";
 import { LoginResultData } from "../store/interfaces/authInterfaces";
 import { decodeTokenAndSetDecodedInfo } from "./decoding";
 import { API_URL } from "../constants/urls";
@@ -36,15 +36,15 @@ export const baseQueryWithReauth = async (
     if (refreshResult?.data) {
       const data = refreshResult.data as LoginResultData;
       const newAccessToken = data.access;
-      const decodedAccessTokenInfo =
+      const userInfo =
         decodeTokenAndSetDecodedInfo(newAccessToken);
 
-      if (newAccessToken && decodedAccessTokenInfo) {
+      if (newAccessToken && userInfo) {
         api.dispatch(
           setCredentials({
             accessToken: newAccessToken,
             refreshToken: data.refresh,
-            decodedAccessTokenInfo,
+            userInfo,
           })
         );
       } else {

@@ -1,7 +1,7 @@
 export interface AuthState {
   accessToken: string | null;
   refreshToken: string | null;
-  decodedAccessTokenInfo: DecodedTokenState | null;
+  userInfo: DecodedTokenState | null;
 }
 
 export interface DecodedTokenState {

@@ -2,9 +2,9 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AuthState, DecodedTokenState } from "../interfaces/authInterfaces";
 
 const initialState: AuthState = {
-  accessToken: null,
-  refreshToken: null,
-  decodedAccessTokenInfo: null,
+  accessToken: localStorage.getItem("accessToken") || null,
+  refreshToken: localStorage.getItem("refreshToken") || null,
+  userInfo: localStorage.getItem("userInfo") ? JSON.parse(localStorage.getItem("userInfo")!) : null
 };
 
 const authSlice = createSlice({
@@ -16,24 +16,24 @@ const authSlice = createSlice({
       action: PayloadAction<{
         accessToken: string;
         refreshToken: string;
-        decodedAccessTokenInfo: DecodedTokenState | null;
+        userInfo: DecodedTokenState | null;
       }>
     ) {
-      const { accessToken, refreshToken, decodedAccessTokenInfo } = action.payload;
+      const { accessToken, refreshToken, userInfo } = action.payload;
       state.accessToken = accessToken;
       state.refreshToken = refreshToken;
-      state.decodedAccessTokenInfo = decodedAccessTokenInfo;
+      state.userInfo = userInfo;
       localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("refreshToken", refreshToken);
-      localStorage.setItem('decodedAccessTokenInfo', JSON.stringify(decodedAccessTokenInfo));
+      localStorage.setItem('userInfo', JSON.stringify(userInfo));
     },
     logOut(state) {
       state.accessToken = null;
       state.refreshToken = null;
-      state.decodedAccessTokenInfo = null;
+      state.userInfo = null;
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
-      localStorage.removeItem("decodedAccessTokenInfo");
+      localStorage.removeItem("userInfo");
     },
   },
 });

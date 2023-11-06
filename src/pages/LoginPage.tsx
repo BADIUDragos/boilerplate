@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { Form, Button, Alert } from "react-bootstrap";
 import { useDispatch } from "react-redux";
-import { AppDispatch } from "../store/store";
+import { AppDispatch } from "../store";
 import FormContainer from "../components/FormContainer";
 
-import { useLoginMutation } from "../store/store";
+import { useLoginMutation } from "../store";
 import { setCredentials } from "../store/slices/authSlice";
 import { decodeTokenAndSetDecodedInfo } from "../functions/decoding";
 import Loader from "../components/Loader";
@@ -34,7 +34,7 @@ const LoginPage: React.FC = () => {
           setCredentials({
             accessToken: access,
             refreshToken: refresh,
-            decodedAccessTokenInfo: decodedInfo,
+            userInfo: decodedInfo,
           })
         );
 
