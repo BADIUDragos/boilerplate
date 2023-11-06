@@ -11,7 +11,7 @@ interface IHeader {
 const Header: React.FC<IHeader> = ({ className }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate()
-  const decodedTokenInfo = useSelector(
+  const userInfo = useSelector(
     (state: RootState) => state.auth.userInfo
   );
 
@@ -34,10 +34,10 @@ const Header: React.FC<IHeader> = ({ className }) => {
             </Link>
           </Navbar.Brand>
           <Navbar.Text className="ml-3">Boilerplate APP</Navbar.Text>
-          {decodedTokenInfo ? (
+          {userInfo ? (
             <>
             <Navbar.Text className="ml-3">
-              Hi {decodedTokenInfo.username} !
+              Hi {userInfo.username} !
             </Navbar.Text>
             <Navbar.Text className="ml-3 cursor-pointer" onClick={handleLogout}>Logout</Navbar.Text>
             </>
