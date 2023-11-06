@@ -1,7 +1,12 @@
-import React from "react";
+import { useGetTestStringsQuery } from "../store/apis/testApi";
 
 const HomePage = () => {
-  return <div>HomePage</div>;
+  
+  const { data, error, isLoading } = useGetTestStringsQuery(null);
+
+  return (
+    <div>homepage</div>
+  );
 };
 
 export default HomePage;
