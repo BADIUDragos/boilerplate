@@ -4,6 +4,9 @@ import { RootState } from "../store";
 import { LoginResultData } from "../store/interfaces/authInterfaces";
 import { decodeTokenAndSetDecodedInfo } from "./decoding";
 import { API_URL } from "../constants/urls";
+import { Mutex } from "async-mutex";
+
+const mutex = new Mutex();
 
 export const baseQuery = fetchBaseQuery({
   baseUrl: API_URL,
@@ -22,36 +25,46 @@ export const baseQueryWithReauth = async (
   api: any,
   extraOptions: any
 ) => {
+  await mutex.waitForUnlock();
   let result = await baseQuery(args, api, extraOptions);
 
   if (result?.error?.status === 403) {
-    console.log("sending refresh token");
-    const refreshResult = await baseQuery(
-      { url: `${API_URL}/auth/token/refresh` },
-      api,
-      extraOptions
-    );
-    console.log(refreshResult);
-
-    if (refreshResult?.data) {
-      const data = refreshResult.data as LoginResultData;
-      const newAccessToken = data.access;
-      const userInfo =
-        decodeTokenAndSetDecodedInfo(newAccessToken);
-
-      if (newAccessToken && userInfo) {
-        api.dispatch(
-          setCredentials({
-            accessToken: newAccessToken,
-            refreshToken: data.refresh,
-            userInfo,
-          })
+    if (!mutex.isLocked()) {
+      const release = await mutex.acquire();
+      try {
+        console.log("sending refresh token");
+        const refreshResult = await baseQuery(
+          { url: `${API_URL}/auth/token/refresh` },
+          api,
+          extraOptions
         );
-      } else {
-        api.dispatch(logOut());
+        console.log(refreshResult);
+
+        if (refreshResult?.data) {
+          const data = refreshResult.data as LoginResultData;
+          const newAccessToken = data.access;
+          const userInfo = decodeTokenAndSetDecodedInfo(newAccessToken);
+
+          if (newAccessToken && userInfo) {
+            api.dispatch(
+              setCredentials({
+                accessToken: newAccessToken,
+                refreshToken: data.refresh,
+                userInfo,
+              })
+            );
+          } else {
+            api.dispatch(logOut());
+          }
+        } else {
+          api.dispatch(logOut());
+        }
+      } finally {
+        release();
       }
     } else {
-      api.dispatch(logOut());
+      await mutex.waitForUnlock();
+      result = await baseQuery(args, api, extraOptions);
     }
   }
 
