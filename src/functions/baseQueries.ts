@@ -31,42 +31,53 @@ export const baseQueryWithReauth: BaseQueryFn<
   unknown,
   FetchBaseQueryError
 > = async (args: string | FetchArgs, api: BaseQueryApi, extraOptions: {}) => {
+  const release = await mutex.acquire();
   let result = await baseQuery(args, api, extraOptions);
 
   if (result.error && result.error.status === 401) {
-    console.log("sending refresh token");
-    const refreshResult = await baseQuery(
-      {
-        url: `${API_URL}/auth/token/refresh`,
-        method: "POST",
-        body: {
-          refresh: localStorage.getItem("refreshToken") || "", 
+    try {
+      const currentState = api.getState() as RootState; 
+      if (
+        currentState.auth.accessToken !== localStorage.getItem("accessToken")
+      ) {
+        return baseQuery(args, api, extraOptions);
+      }
+
+      const refreshResult = await baseQuery(
+        {
+          url: `${API_URL}/auth/token/refresh`,
+          method: "POST",
+          body: {
+            refresh: localStorage.getItem("refreshToken") || "",
+          },
         },
-      },
-      api,
-      extraOptions
-    );
-    console.log(refreshResult);
+        api,
+        extraOptions
+      );
+      console.log(refreshResult);
 
-    if (refreshResult?.data) {
-      const data = refreshResult.data as LoginResultData;
-      const newAccessToken = data.access;
-      const newRefreshToken = data.refresh;
-      const userInfo = decodeTokenAndSetDecodedInfo(newAccessToken);
+      if (refreshResult?.data) {
+        const data = refreshResult.data as LoginResultData;
+        const newAccessToken = data.access;
+        const newRefreshToken = data.refresh;
+        const userInfo = decodeTokenAndSetDecodedInfo(newAccessToken);
 
-      if (newAccessToken && userInfo) {
-        api.dispatch(
-          setCredentials({
-            accessToken: newAccessToken,
-            refreshToken: newRefreshToken,
-            userInfo,
-          })
-        );
+        if (newAccessToken && userInfo) {
+          api.dispatch(
+            setCredentials({
+              accessToken: newAccessToken,
+              refreshToken: newRefreshToken,
+              userInfo,
+            })
+          );
+        } else {
+          api.dispatch(logOut());
+        }
       } else {
         api.dispatch(logOut());
       }
-    } else {
-      api.dispatch(logOut());
+    } finally {
+      release();
     }
   }
 
