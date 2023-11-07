@@ -4,13 +4,14 @@ import Layout from "../pages/Layout";
 import ErrorPage from "../pages/ErrorPage";
 import NotFoundPage from "../pages/NotFoundPage";
 import { createBrowserRouter } from "react-router-dom";
+import ProtectedRoute from "../components/ProtectedRoute";
 
 const router = createBrowserRouter([
   {
     element: <Layout/>,
     children: [
       { path: "/", element: <HomePage/> },
-      { path: "/login", element: <LoginPage/> },
+      { path: "/login", element: <ProtectedRoute redirectUrl={"/"} requiredPermissions={null} loginRequired={false}><LoginPage/></ProtectedRoute> },
     ],
     errorElement: <ErrorPage />,
   },

@@ -34,13 +34,14 @@ const LoginPage: React.FC = () => {
 
         dispatch(
           setCredentials({
-            accessToken: access,
-            refreshToken: refresh,
+            tokens: {
+              access: access,
+              refresh: refresh
+            },
             userInfo: decodedInfo,
           })
         );
 
-        setErrorMessage(null);
         navigate("/")
       }
     } catch (error: any) {

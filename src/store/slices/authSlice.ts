@@ -1,10 +1,15 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { AuthState, DecodedTokenState } from "../interfaces/authInterfaces";
+import { AuthState, LoginResultData, UserInfoState } from "../interfaces/authInterfaces";
+import { decodeTokenAndSetDecodedInfo } from "../../functions/decoding";
+
+const tokensInitialState: LoginResultData = {
+  access: localStorage.getItem("accessToken") || "null",
+  refresh: localStorage.getItem("refreshToken") || "null",
+}
 
 const initialState: AuthState = {
-  accessToken: localStorage.getItem("accessToken") || null,
-  refreshToken: localStorage.getItem("refreshToken") || null,
-  userInfo: localStorage.getItem("userInfo") ? JSON.parse(localStorage.getItem("userInfo")!) : null
+  tokens: tokensInitialState || null,
+  userInfo: decodeTokenAndSetDecodedInfo(tokensInitialState.access)
 };
 
 const authSlice = createSlice({
@@ -14,26 +19,20 @@ const authSlice = createSlice({
     setCredentials(
       state,
       action: PayloadAction<{
-        accessToken: string;
-        refreshToken: string;
-        userInfo: DecodedTokenState | null;
+        tokens: LoginResultData;
+        userInfo: UserInfoState | null;
       }>
     ) {
-      const { accessToken, refreshToken, userInfo } = action.payload;
-      state.accessToken = accessToken;
-      state.refreshToken = refreshToken;
-      state.userInfo = userInfo;
-      localStorage.setItem("accessToken", accessToken);
-      localStorage.setItem("refreshToken", refreshToken);
-      localStorage.setItem('userInfo', JSON.stringify(userInfo));
+      state.tokens = action.payload.tokens;
+      state.userInfo = action.payload.userInfo;
+      localStorage.setItem("accessToken", action.payload.tokens.access);
+      localStorage.setItem("refreshToken", action.payload.tokens.refresh);
     },
     logOut(state) {
-      state.accessToken = null;
-      state.refreshToken = null;
+      state.tokens = null;
       state.userInfo = null;
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
-      localStorage.removeItem("userInfo");
     },
   },
 });
