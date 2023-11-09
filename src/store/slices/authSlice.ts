@@ -29,6 +29,7 @@ const authSlice = createSlice({
       localStorage.setItem("refreshToken", action.payload.tokens.refresh);
     },
     logOut(state) {
+      console.log("this worked")
       state.tokens = null;
       state.userInfo = null;
       localStorage.removeItem("accessToken");

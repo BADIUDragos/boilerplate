@@ -7,6 +7,7 @@ export interface UserInfoState {
   id: string | null;
   username: string | null;
   permissions: string[] | null;
+  isStaff: boolean | null;
 }
 
 export interface LoginResultData {
@@ -17,4 +18,8 @@ export interface LoginResultData {
 export interface LoginCredentials {
   username: string;
   password: string;
+}
+
+export interface BlacklistingRefresh {
+  refresh: string
 }

@@ -1,51 +1,24 @@
 import React, { useState } from "react";
 import { Form, Button, Alert } from "react-bootstrap";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "../store";
 import FormContainer from "../components/FormContainer";
 
 import { useLoginMutation } from "../store";
-import { setCredentials } from "../store/slices/authSlice";
-import { decodeTokenAndSetDecodedInfo } from "../functions/decoding";
 import Loader from "../components/Loader";
 import { useNavigate } from "react-router-dom";
 
 const LoginPage: React.FC = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState<string | null>(
-    null
-  );
 
-  const [triggerLogin, { isLoading }] = useLoginMutation();
+  const [triggerLogin, { isLoading, isError, isSuccess, error }] = useLoginMutation();
 
-  const navigate = useNavigate()
-  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
 
   const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    try {
-      const result = await triggerLogin({ username, password }).unwrap();
-
-      if (result) {
-        const { access, refresh } = result;
-        const decodedInfo = decodeTokenAndSetDecodedInfo(access);
-
-        dispatch(
-          setCredentials({
-            tokens: {
-              access: access,
-              refresh: refresh
-            },
-            userInfo: decodedInfo,
-          })
-        );
-
-        navigate("/")
-      }
-    } catch (error: any) {
-      setErrorMessage(`${error.data.detail}`);
+    triggerLogin({ username, password });
+    if (isSuccess) {
+      navigate("/");
     }
   };
 
@@ -89,11 +62,16 @@ const LoginPage: React.FC = () => {
         )}
       </Form>
 
-      {errorMessage && (
-        <Alert variant="danger" className="mt-3">
-          {errorMessage}
-        </Alert>
-      )}
+      {isError &&
+        error &&
+        "data" in error &&
+        typeof error.data === "object" &&
+        error.data &&
+        "detail" in error.data && (
+          <Alert variant="danger" className="mt-3">
+            {(error.data as { detail: string }).detail}
+          </Alert>
+        )}
     </FormContainer>
   );
 };

@@ -1,23 +1,24 @@
 import { Navbar, Container, Nav } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
-import { RootState } from "../store";
+import { RootState, useBlacklistMutation } from "../store";
 import { useDispatch, useSelector } from "react-redux";
-import { logOut } from "../store/slices/authSlice";
 
 interface IHeader {
   className?: string;
 }
 
 const Header: React.FC<IHeader> = ({ className }) => {
-  const dispatch = useDispatch();
   const navigate = useNavigate()
-  const userInfo = useSelector(
-    (state: RootState) => state.auth.userInfo
-  );
+  const auth = useSelector((state: RootState) => state.auth);
+  const { userInfo } = auth
+  const refresh = useSelector((state: RootState) => state.auth.tokens?.refresh);
+
+  const [blacklistToken, {isLoading, isError, isSuccess, error}] = useBlacklistMutation()
 
   const handleLogout = () => {
-    dispatch(logOut());
-    navigate('/')
+    if (refresh) {
+      blacklistToken({refresh});
+    }
   };
 
   return (
