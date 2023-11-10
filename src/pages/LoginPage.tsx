@@ -10,16 +10,14 @@ const LoginPage: React.FC = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const [triggerLogin, { isLoading, isError, isSuccess, error }] = useLoginMutation();
+  const [triggerLogin, { isLoading, isError, error }] = useLoginMutation();
 
   const navigate = useNavigate();
 
   const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
     triggerLogin({ username, password });
-    if (isSuccess) {
-      navigate("/");
-    }
+    navigate("/");
   };
 
   return (

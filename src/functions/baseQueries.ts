@@ -1,5 +1,4 @@
 import {
-  BaseQueryApi,
   BaseQueryFn,
   FetchArgs,
   FetchBaseQueryError,
@@ -11,6 +10,8 @@ import { LoginResultData } from "../store/interfaces/authInterfaces";
 import { decodeTokenAndSetDecodedInfo } from "./decoding";
 import { API_URL } from "../constants/urls";
 import { Mutex } from "async-mutex";
+import { isTokenInvalidError } from "./typeGuards/isTokenInvalidError";
+import { isTokenBlacklistedError } from "./typeGuards/isTokenBlacklistedError";
 
 const mutex = new Mutex();
 
@@ -26,59 +27,51 @@ export const baseQuery = fetchBaseQuery({
   },
 });
 
-export const baseQueryWithReauth: BaseQueryFn<
-  string | FetchArgs,
-  unknown,
-  FetchBaseQueryError
-> = async (args: string | FetchArgs, api: BaseQueryApi, extraOptions: {}) => {
-  const release = await mutex.acquire();
+export const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> = async (args, api, extraOptions) => {
+  await mutex.waitForUnlock();
   let result = await baseQuery(args, api, extraOptions);
 
-  if (result.error && result.error.status === 401) {
-    try {
-      const currentState = api.getState() as RootState; 
-      if (
-        currentState.auth.tokens?.access !== localStorage.getItem("accessToken")
-      ) {
-        return baseQuery(args, api, extraOptions);
-      }
+  if (result.error) {
+    const isBlacklisting = (api.getState() as RootState).auth.isBlacklistingToken;
+    if (isTokenBlacklistedError(result.error)) {
+      api.dispatch(logOut());
+      return result;
+    } else if (isBlacklisting && isTokenInvalidError(result.error)) {
+      api.dispatch(logOut());
+      return result;
+    } else if (isTokenInvalidError(result.error)) {
+      
+      if (!mutex.isLocked()) {
+        const release = await mutex.acquire();
+        try {
+          const refreshResult = await baseQuery({
+            url: '/auth/token/refresh',
+            method: 'POST',
+            body: {
+              refresh: localStorage.getItem('refreshToken') || '',
+            },
+          }, api, extraOptions);
 
-      const refreshResult = await baseQuery(
-        {
-          url: `${API_URL}/auth/token/refresh`,
-          method: "POST",
-          body: {
-            refresh: localStorage.getItem("refreshToken") || "",
-          },
-        },
-        api,
-        extraOptions
-      );
-      console.log(refreshResult);
-
-      if (refreshResult?.data) {
-        const data = refreshResult.data as LoginResultData;
-        const newAccessToken = data.access;
-        const userInfo = decodeTokenAndSetDecodedInfo(newAccessToken);
-
-        if (newAccessToken && userInfo) {
-          api.dispatch(
-            setCredentials({
+          if (refreshResult.data) {
+            const data = refreshResult.data as LoginResultData;
+            api.dispatch(setCredentials({
               tokens: {
                 access: data.access,
-                refresh: data.refresh
+                refresh: data.refresh,
               },
-              userInfo,
-            })
-          );
-        } else {
-          api.dispatch(logOut());
+              userInfo: decodeTokenAndSetDecodedInfo(data.access),
+            }));
+            result = await baseQuery(args, api, extraOptions);
+          } else {
+            api.dispatch(logOut());
+          }
+        } finally {
+          release();
         }
       } else {
-        api.dispatch(logOut());
+        await mutex.waitForUnlock();
+        result = await baseQuery(args, api, extraOptions);
       }
-    } finally {
-      release();
     }
   }
 

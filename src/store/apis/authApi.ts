@@ -1,10 +1,11 @@
 import { decodeTokenAndSetDecodedInfo } from "../../functions/decoding";
+import { BasicResponse } from "../errorHandling/basicError";
 import {
   BlacklistingRefresh,
   LoginCredentials,
   LoginResultData,
 } from "../interfaces/authInterfaces";
-import { logOut, setCredentials } from "../slices/authSlice";
+import { setCredentials } from "../slices/authSlice";
 import { baseApi } from "./baseApi";
 
 const authApi = baseApi.injectEndpoints({
@@ -28,19 +29,12 @@ const authApi = baseApi.injectEndpoints({
         }
       },
     }),
-    blacklist: build.mutation<void, BlacklistingRefresh>({
-      query: (tokens) => ({
+    blacklist: build.mutation<BasicResponse, BlacklistingRefresh>({
+      query: (refresh) => ({
         url: "/auth/token/blacklist",
         method: "POST",
-        body: tokens,
+        body: refresh,
       }),
-      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
-        try {
-          await queryFulfilled;
-          console.log("request was made")
-          dispatch(logOut());
-        } catch (error: any) {}
-      },
     }),
   }),
 });

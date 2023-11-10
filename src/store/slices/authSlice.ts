@@ -9,7 +9,8 @@ const tokensInitialState: LoginResultData = {
 
 const initialState: AuthState = {
   tokens: tokensInitialState || null,
-  userInfo: decodeTokenAndSetDecodedInfo(tokensInitialState.access)
+  userInfo: decodeTokenAndSetDecodedInfo(tokensInitialState.access),
+  isBlacklistingToken: false
 };
 
 const authSlice = createSlice({
@@ -35,9 +36,12 @@ const authSlice = createSlice({
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
     },
+    setBlacklistingToken: (state, action: PayloadAction<boolean>) => {
+      state.isBlacklistingToken = action.payload;
+    },
   },
 });
 
-export const { setCredentials, logOut } = authSlice.actions;
+export const { setCredentials, logOut, setBlacklistingToken } = authSlice.actions;
 
 export default authSlice.reducer;
