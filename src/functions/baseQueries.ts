@@ -36,11 +36,11 @@ export const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, Fetch
     if (isTokenBlacklistedError(result.error)) {
       api.dispatch(logOut());
       return result;
-    } else if (isBlacklisting && isTokenInvalidError(result.error)) {
+    } else if (isBlacklisting && result.error.status === 401) {
       api.dispatch(logOut());
       return result;
     } else if (isTokenInvalidError(result.error)) {
-      
+      const refresh = (api.getState() as RootState).auth.tokens?.refresh;
       if (!mutex.isLocked()) {
         const release = await mutex.acquire();
         try {
@@ -48,7 +48,7 @@ export const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, Fetch
             url: '/auth/token/refresh',
             method: 'POST',
             body: {
-              refresh: localStorage.getItem('refreshToken') || '',
+              refresh: refresh,
             },
           }, api, extraOptions);
 
@@ -59,7 +59,7 @@ export const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, Fetch
                 access: data.access,
                 refresh: data.refresh,
               },
-              userInfo: decodeTokenAndSetDecodedInfo(data.access),
+              userInfo: data.access ? decodeTokenAndSetDecodedInfo(data.access) : null,
             }));
             result = await baseQuery(args, api, extraOptions);
           } else {

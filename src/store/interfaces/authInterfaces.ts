@@ -12,8 +12,8 @@ export interface UserInfoState {
 }
 
 export interface LoginResultData {
-  access: string;
-  refresh: string;
+  access: string | null;
+  refresh: string | null;
 }
 
 export interface LoginCredentials {

@@ -3,13 +3,13 @@ import { AuthState, LoginResultData, UserInfoState } from "../interfaces/authInt
 import { decodeTokenAndSetDecodedInfo } from "../../functions/decoding";
 
 const tokensInitialState: LoginResultData = {
-  access: localStorage.getItem("accessToken") || "null",
-  refresh: localStorage.getItem("refreshToken") || "null",
+  access: localStorage.getItem("accessToken") || null,
+  refresh: localStorage.getItem("refreshToken") || null,
 }
 
 const initialState: AuthState = {
   tokens: tokensInitialState || null,
-  userInfo: decodeTokenAndSetDecodedInfo(tokensInitialState.access),
+  userInfo: tokensInitialState.access ? decodeTokenAndSetDecodedInfo(tokensInitialState.access) : null,
   isBlacklistingToken: false
 };
 
@@ -26,11 +26,12 @@ const authSlice = createSlice({
     ) {
       state.tokens = action.payload.tokens;
       state.userInfo = action.payload.userInfo;
-      localStorage.setItem("accessToken", action.payload.tokens.access);
-      localStorage.setItem("refreshToken", action.payload.tokens.refresh);
+      if (action.payload.tokens.access && action.payload.tokens.refresh) {
+        localStorage.setItem("accessToken", action.payload.tokens.access);
+        localStorage.setItem("refreshToken", action.payload.tokens.refresh);
+      }      
     },
     logOut(state) {
-      console.log("this worked")
       state.tokens = null;
       state.userInfo = null;
       localStorage.removeItem("accessToken");
