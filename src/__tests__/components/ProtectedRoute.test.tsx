@@ -2,19 +2,33 @@
 import { render, screen } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { mockStoreAuth } from "../utils/mockStores";
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { AuthState } from "../../store/interfaces/authInterfaces";
 import ProtectedRoute from "../../components/ProtectedRoute";
 
 describe('ProtectedRoute', () => {
-  const setup = (authState: AuthState, requiredPermissions?: string[], loginRequired: boolean = true, redirectUrl?: string) => {
+  const setup = (
+    authState: AuthState, 
+    requiredPermissions?: string[], 
+    loginRequired: boolean = true, 
+    redirectUrl: string = '/login'
+  ) => {
     const store = mockStoreAuth({ auth: authState });
     render(
       <Provider store={store}>
-        <MemoryRouter>
-          <ProtectedRoute requiredPermissions={requiredPermissions} loginRequired={loginRequired} redirectUrl={redirectUrl}>
-            <div>Protected Content</div>
-          </ProtectedRoute>
+        <MemoryRouter initialEntries={['/protected']}>
+          <Routes>
+            <Route path="/protected" element={
+              <ProtectedRoute 
+                requiredPermissions={requiredPermissions} 
+                loginRequired={loginRequired} 
+                redirectUrl={redirectUrl}
+              >
+                <div>Protected Content</div>
+              </ProtectedRoute>
+            }/>
+            <Route path="/login" element={<div>Login Page</div>} />
+          </Routes>
         </MemoryRouter>
       </Provider>
     );
@@ -82,6 +96,37 @@ describe('ProtectedRoute', () => {
       false
     );
 
+    expect(screen.getByText("Protected Content")).toBeInTheDocument();
+  });
+
+  it("redirects to login when user is not logged in", () => {
+    setup(
+      {
+        tokens: null,
+        userInfo: null,
+        isBlacklistingToken: false,
+      },
+      ["view_content"]
+    );
+  
+    expect(screen.getByText("Login Page")).toBeInTheDocument();
+  });
+
+  it("renders children for authorized and logged in users", () => {
+    setup(
+      {
+        tokens: { access: "mock_access_token", refresh: "mock_refresh_token" },
+        userInfo: {
+          id: "1",
+          username: "user",
+          permissions: ["view_content"],
+          isStaff: false,
+        },
+        isBlacklistingToken: false,
+      },
+      ["view_content"]
+    );
+  
     expect(screen.getByText("Protected Content")).toBeInTheDocument();
   });
 });
