@@ -1,6 +1,6 @@
 import { jwtDecode } from "jwt-decode";
 
-export function decodeTokenAndSetDecodedInfo(token: string) {
+export function decodeTokenAndSetUserInfo(token: string) {
   try {
     const decoded: any = jwtDecode(token);
     const { id, username, permissions, isStaff } = decoded;

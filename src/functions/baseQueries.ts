@@ -7,7 +7,7 @@ import {
 import { setCredentials, logOut } from "../store/slices/authSlice";
 import { RootState } from "../store";
 import { LoginResultData } from "../store/interfaces/authInterfaces";
-import { decodeTokenAndSetDecodedInfo } from "./decoding";
+import { decodeTokenAndSetUserInfo } from "./decoding";
 import { API_URL } from "../constants/urls";
 import { Mutex } from "async-mutex";
 import { isTokenInvalidError } from "./typeGuards/isTokenInvalidError";
@@ -59,7 +59,7 @@ export const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, Fetch
                 access: data.access,
                 refresh: data.refresh,
               },
-              userInfo: data.access ? decodeTokenAndSetDecodedInfo(data.access) : null,
+              userInfo: data.access ? decodeTokenAndSetUserInfo(data.access) : null,
             }));
             result = await baseQuery(args, api, extraOptions);
           } else {

@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AuthState, LoginResultData, UserInfoState } from "../interfaces/authInterfaces";
-import { decodeTokenAndSetDecodedInfo } from "../../functions/decoding";
+import { decodeTokenAndSetUserInfo } from "../../functions/decoding";
 
 const tokensInitialState: LoginResultData = {
   access: localStorage.getItem("accessToken") || null,
@@ -9,7 +9,7 @@ const tokensInitialState: LoginResultData = {
 
 const initialState: AuthState = {
   tokens: tokensInitialState || null,
-  userInfo: tokensInitialState.access ? decodeTokenAndSetDecodedInfo(tokensInitialState.access) : null,
+  userInfo: tokensInitialState.access ? decodeTokenAndSetUserInfo(tokensInitialState.access) : null,
   isBlacklistingToken: false
 };
 
