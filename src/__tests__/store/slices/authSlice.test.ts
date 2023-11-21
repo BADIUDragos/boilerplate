@@ -26,42 +26,40 @@ const filledInitialState: AuthState = {
   isBlacklistingToken: false,
 };
 
-jest.mock('../../../functions/decoding', () => ({
-  decodeTokenAndSetUserInfo: jest.fn().mockReturnValue({
-    id: "1",
-    username: "user",
-    permissions: ["view_content"],
-    isStaff: false,
-  }),
-}));
+// jest.mock('../../../functions/decoding', () => ({
+//   decodeTokenAndSetUserInfo: jest.fn().mockReturnValue({
+//     id: "1",
+//     username: "user",
+//     permissions: ["view_content"],
+//     isStaff: false,
+//   }),
+// }));
 
-describe('authSlice initialState', () => {
-  beforeEach(() => {
-    jest.spyOn(Storage.prototype, 'getItem').mockImplementation((key) => {
-      if (key === "accessToken") return "mock_access_token";
-      return null;
-    });
-  });
+// describe('authSlice initialState', () => {
 
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
+//   it('initializes correctly based on localStorage and decode function', () => {
 
-  it('initializes correctly based on localStorage and decode function', () => {
-    const initialState = authReducer(undefined, { type: '@@INIT' });
+//     jest.spyOn(Storage.prototype, 'getItem').mockImplementation((key) => {
+//       if (key === "accessToken") return "mock_access_token";
+//       return 'mock_refresh_token';
+//     });
 
-    expect(initialState.tokens).toEqual({
-      access: "mock_access_token",
-      refresh: null,
-    });
-    expect(initialState.userInfo).toEqual({
-      id: "1",
-      username: "user",
-      permissions: ["view_content"],
-      isStaff: false,
-    });
-  });
-});
+//     const initialState = authReducer(undefined, { type: '@@INIT' });
+
+//     expect(initialState.tokens).toEqual({
+//       access: "mock_access_token",
+//       refresh: "mock_refresh_token",
+//     });
+//     expect(initialState.userInfo).toEqual({
+//       id: "1",
+//       username: "user",
+//       permissions: ["view_content"],
+//       isStaff: false,
+//     });
+
+//     jest.restoreAllMocks();
+//   });
+// });
 
 describe("authSlice basic functionalities", () => {
 

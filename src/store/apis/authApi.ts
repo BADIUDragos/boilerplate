@@ -1,4 +1,4 @@
-import { decodeTokenAndSetDecodedInfo } from "../../functions/decoding";
+import { decodeTokenAndSetUserInfo } from "../../functions/decoding";
 import { BasicResponse } from "../errorHandling/basicError";
 import {
   BlacklistingRefresh,
@@ -20,7 +20,7 @@ const authApi = baseApi.injectEndpoints({
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;
-          const userInfo = data.access ? decodeTokenAndSetDecodedInfo(data.access) : null;
+          const userInfo = data.access ? decodeTokenAndSetUserInfo(data.access) : null;
           dispatch(setCredentials({
             tokens: { access: data.access, refresh: data.refresh },
             userInfo: userInfo,
