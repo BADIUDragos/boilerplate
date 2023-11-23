@@ -11,6 +11,11 @@ import {
   LoginResultData,
 } from "../../../store/interfaces/authInterfaces";
 import { getWrapper } from "../../../testUtils/functions";
+import {
+  fulfilledMutation,
+  pendingMutation,
+  uninitializedMutation,
+} from "../../../testUtils/mutationObjectStates";
 
 enableFetchMocks();
 
@@ -75,13 +80,7 @@ describe("Login User", () => {
 
     const [triggerLogin] = result.current;
 
-    expect(result.current[1]).toMatchObject({
-      status: "uninitialized",
-      isLoading: false,
-      isSuccess: false,
-      isError: false,
-      originalArgs: undefined,
-    });
+    expect(result.current[1]).toMatchObject(uninitializedMutation);
 
     const userArgs: LoginCredentials = {
       username: "success",
@@ -96,26 +95,13 @@ describe("Login User", () => {
       triggerLogin(userArgs);
     });
 
-    expect(result.current[1]).toMatchObject({
-      status: "pending",
-      endpointName: "login",
-      isLoading: true,
-      isSuccess: false,
-      isError: false,
-      originalArgs: userArgs,
-    });
-
+    expect(result.current[1]).toMatchObject(pendingMutation("login", userArgs));
+    debugger
     await waitFor(() => expect(result.current[1].isSuccess).toBe(true));
 
-    expect(result.current[1]).toMatchObject({
-      status: "fulfilled",
-      endpointName: "login",
-      isLoading: false,
-      isSuccess: true,
-      isError: false,
-      originalArgs: userArgs,
-      data: tokenBody,
-    });
+    expect(result.current[1]).toMatchObject(
+      fulfilledMutation("login", userArgs, tokenBody)
+    );
 
     const newUserInfoState = store.getState().auth;
     expect(newUserInfoState).toEqual(expectedUserInfoState);
@@ -136,13 +122,7 @@ describe("Login User", () => {
 
     const [triggerLogin] = result.current;
 
-    expect(result.current[1]).toMatchObject({
-      status: "uninitialized",
-      isLoading: false,
-      isSuccess: false,
-      isError: false,
-      originalArgs: undefined,
-    });
+    expect(result.current[1]).toMatchObject(uninitializedMutation);
 
     const userArgs: LoginCredentials = {
       username: "failure",
