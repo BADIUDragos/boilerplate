@@ -1,6 +1,6 @@
 import { http, RequestHandler, HttpResponse } from "msw";
 
-export const handlers: RequestHandler[] = [
+export const authHandlers: RequestHandler[] = [
   http.post("/auth/token", () => {
     return HttpResponse.json({
       access: "mock_access_token",

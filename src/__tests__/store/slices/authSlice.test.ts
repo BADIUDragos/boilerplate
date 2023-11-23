@@ -1,7 +1,6 @@
 import authReducer, {
   setCredentials,
   logOut,
-  setBlacklistingToken
 } from "../../../store/slices/authSlice";
 import {
   AuthState,
@@ -12,7 +11,6 @@ import {
 const emptyInitialState: AuthState = {
   tokens: null,
   userInfo: null,
-  isBlacklistingToken: false,
 };
 
 const filledInitialState: AuthState = {
@@ -22,8 +20,7 @@ const filledInitialState: AuthState = {
     username: "user",
     permissions: ["view_content"],
     isStaff: false,
-  },
-  isBlacklistingToken: false,
+  }
 };
 
 // jest.mock('../../../functions/decoding', () => ({
@@ -105,11 +102,4 @@ describe("authSlice basic functionalities", () => {
     jest.restoreAllMocks();
   });
 
-  it("should handle setBlacklistingToken", () => {
-    const blacklistingStatus = true;
-    const action = setBlacklistingToken(blacklistingStatus);
-    const newState = authReducer(emptyInitialState, action);
-
-    expect(newState.isBlacklistingToken).toBe(blacklistingStatus);
-  });
 });

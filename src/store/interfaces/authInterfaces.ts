@@ -1,7 +1,6 @@
 export interface AuthState {
   tokens: LoginResultData | null
   userInfo: UserInfoState | null;
-  isBlacklistingToken: boolean
 }
 
 export interface UserInfoState {

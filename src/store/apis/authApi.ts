@@ -5,7 +5,7 @@ import {
   LoginCredentials,
   LoginResultData,
 } from "../interfaces/authInterfaces";
-import { logOut, setBlacklistingToken, setCredentials } from "../slices/authSlice";
+import { logOut, setCredentials } from "../slices/authSlice";
 import { baseApi } from "./baseApi";
 
 const authApi = baseApi.injectEndpoints({
@@ -36,13 +36,10 @@ const authApi = baseApi.injectEndpoints({
         body: refresh,
       }),
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
-        dispatch(setBlacklistingToken(true));
         try {
           await queryFulfilled;
           dispatch(logOut());
         } catch (error) {
-        } finally {
-          dispatch(setBlacklistingToken(false));
         }
       },
     }),
