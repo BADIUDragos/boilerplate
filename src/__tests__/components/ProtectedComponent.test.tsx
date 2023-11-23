@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { Provider } from "react-redux";
-import { mockStoreAuth } from "../utils/mockStores";
+import { mockStoreAuth } from "../../testUtils/mockStores";
 import { AuthState } from "../../store/interfaces/authInterfaces";
 import ProtectedComponent from "../../components/ProtectedComponent";
 
@@ -33,7 +33,6 @@ describe("ProtectedComponent", () => {
           permissions: ["view_content"],
           isStaff: false,
         },
-        isBlacklistingToken: false,
       },
       ["view_content"]
     ); 
@@ -51,7 +50,6 @@ describe("ProtectedComponent", () => {
           permissions: ["other_permission"],
           isStaff: false,
         },
-        isBlacklistingToken: false,
       },
       ["view_content"]
     );
@@ -68,7 +66,6 @@ describe("ProtectedComponent", () => {
         permissions: [],
         isStaff: true,
       },
-      isBlacklistingToken: false,
     }, ["view_content"]);
 
     expect(screen.getByText("Protected Content")).toBeInTheDocument();
@@ -79,7 +76,6 @@ describe("ProtectedComponent", () => {
       {
         tokens: null,
         userInfo: null,
-        isBlacklistingToken: false,
       },
       [],
       false

@@ -1,11 +1,8 @@
 import fetchMock, { enableFetchMocks } from "jest-fetch-mock";
-import authReducer from "../../../store/slices/authSlice";
+import { authStore } from "../../../testUtils/individualStores";
 import { renderHook, act, waitFor } from "@testing-library/react";
 
-import { authApi, useLoginMutation } from "../../../store/apis/authApi";
-
-import { Store, AnyAction } from "redux";
-import { Provider } from "react-redux";
+import { useLoginMutation } from "../../../store/apis/authApi";
 
 import { API_URL } from "../../../constants/urls";
 import {
@@ -13,16 +10,9 @@ import {
   LoginCredentials,
   LoginResultData,
 } from "../../../store/interfaces/authInterfaces";
-import { configureStore } from "@reduxjs/toolkit";
-import { rootReducer } from "../../../store/combinedReducer";
+import { getWrapper } from "../../../testUtils/functions";
 
 enableFetchMocks();
-
-function getWrapper(store: Store<any, AnyAction>): React.FC {
-  return ({ children }: { children?: React.ReactNode }) => (
-    <Provider store={store}>{children}</Provider>
-  );
-}
 
 beforeEach(() => {
   fetchMock.resetMocks();
@@ -35,8 +25,9 @@ describe("Login User", () => {
     refresh: "refresh",
   };
 
-  const failedBody = {
-    detail: "Login Failed",
+  const failedBody: LoginResultData = {
+    access: null,
+    refresh: null,
   };
 
   beforeEach(() => {
@@ -61,7 +52,7 @@ describe("Login User", () => {
 
   it("runs the userLoginMutation successfully", async () => {
     const initialUserInfoState: AuthState = {
-      tokens: {access: null, refresh: null},
+      tokens: { access: null, refresh: null },
       userInfo: null,
     };
 
@@ -75,12 +66,8 @@ describe("Login User", () => {
       },
     };
 
-    const store = configureStore({ 
-      reducer: rootReducer,
-      middleware: (getDefaultMiddleware) =>
-        getDefaultMiddleware().concat(authApi.middleware) });
-
-    const wrapper = getWrapper(store);
+    const store = authStore;
+    const wrapper = getWrapper(authStore);
 
     const { result } = renderHook(() => useLoginMutation(undefined), {
       wrapper,
@@ -134,71 +121,66 @@ describe("Login User", () => {
     expect(newUserInfoState).toEqual(expectedUserInfoState);
   });
 
-  // test("Failure", async () => {
-  //   const initialUserInfo =  {
-  //       userInfo: null,
-  //       tokens: null
-  //   }
-  //   const store = setupStore({
-  //       userInfo: initialUserInfo
-  //   })
-  //   const wrapper = getWrapper(store)
+  it("fails on login", async () => {
+    const initialUserInfoState: AuthState = {
+      tokens: { access: null, refresh: null },
+      userInfo: null,
+    };
 
-  //   const { result } = renderHook(() =>
-  //       useLoginUserMutation(undefined),
-  //       { wrapper }
-  //   );
+    const store = authStore;
+    const wrapper = getWrapper(authStore);
 
-  //   const [loginUser] = result.current;
+    const { result } = renderHook(() => useLoginMutation(undefined), {
+      wrapper,
+    });
 
-  //   expect(result.current[1]).toMatchObject({
-  //       status: 'uninitialized',
-  //       isLoading: false,
-  //       isSuccess: false,
-  //       isError: false,
-  //       originalArgs: undefined
-  //   });
+    const [triggerLogin] = result.current;
 
-  //   const userArgs = {
-  //       username: "failure",
-  //       password: "password"
-  //   }
+    expect(result.current[1]).toMatchObject({
+      status: "uninitialized",
+      isLoading: false,
+      isSuccess: false,
+      isError: false,
+      originalArgs: undefined,
+    });
 
-  //   const userInfoState = store.getState().userInfo
-  //   expect(userInfoState).toEqual(initialUserInfo)
+    const userArgs: LoginCredentials = {
+      username: "failure",
+      password: "password",
+    };
 
-  //   act(() => {
-  //     loginUser(userArgs);
-  //   });
+    const userInfoState = store.getState().userInfo;
+    expect(userInfoState).toEqual(initialUserInfoState);
 
-  //   expect(result.current[1]).toMatchObject({
-  //       status: 'pending',
-  //       endpointName: "loginUser",
-  //       isLoading: true,
-  //       isSuccess: false,
-  //       isError: false,
-  //       originalArgs: userArgs
-  //   });
+    act(() => {
+      triggerLogin(userArgs);
+    });
 
-  //   await waitFor(() =>
-  //       expect(result.current[1].status).toBe("rejected")
-  //   );
+    expect(result.current[1]).toMatchObject({
+      status: "pending",
+      endpointName: "login",
+      isLoading: true,
+      isSuccess: false,
+      isError: false,
+      originalArgs: userArgs,
+    });
 
-  //   expect(result.current[1]).toMatchObject({
-  //       status: 'rejected',
-  //       endpointName: "loginUser",
-  //       isLoading: false,
-  //       isSuccess: false,
-  //       isError: true,
-  //       originalArgs: userArgs,
-  //       error: {
-  //           status: 400,
-  //           data: failedBody
-  //       }
-  //   });
+    await waitFor(() => expect(result.current[1].status).toBe("rejected"));
 
-  //   const newUserInfoState = store.getState().userInfo
-  //   expect(newUserInfoState).toEqual(initialUserInfo)
+    expect(result.current[1]).toMatchObject({
+      status: "rejected",
+      endpointName: "login",
+      isLoading: false,
+      isSuccess: false,
+      isError: true,
+      originalArgs: userArgs,
+      error: {
+        status: 400,
+        data: failedBody,
+      },
+    });
 
-  // });
+    const newUserInfoState = store.getState().userInfo;
+    expect(newUserInfoState).toEqual(initialUserInfoState);
+  });
 });
