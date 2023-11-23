@@ -44,7 +44,6 @@ describe('ProtectedRoute', () => {
           permissions: ["view_content"],
           isStaff: false,
         },
-        isBlacklistingToken: false,
       },
       ["view_content"]
     ); 
@@ -62,7 +61,6 @@ describe('ProtectedRoute', () => {
           permissions: ["other_permission"],
           isStaff: false,
         },
-        isBlacklistingToken: false,
       },
       ["view_content"]
     );
@@ -79,7 +77,6 @@ describe('ProtectedRoute', () => {
         permissions: [],
         isStaff: true,
       },
-      isBlacklistingToken: false,
     }, ["view_content"]);
 
     expect(screen.getByText("Protected Content")).toBeInTheDocument();
@@ -90,7 +87,6 @@ describe('ProtectedRoute', () => {
       {
         tokens: null,
         userInfo: null,
-        isBlacklistingToken: false,
       },
       [],
       false
@@ -104,7 +100,6 @@ describe('ProtectedRoute', () => {
       {
         tokens: null,
         userInfo: null,
-        isBlacklistingToken: false,
       },
       ["view_content"]
     );
@@ -121,8 +116,7 @@ describe('ProtectedRoute', () => {
           username: "user",
           permissions: ["view_content"],
           isStaff: false,
-        },
-        isBlacklistingToken: false,
+        }
       },
       ["view_content"]
     );

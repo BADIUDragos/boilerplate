@@ -1,8 +1,8 @@
 import fetchMock, { enableFetchMocks } from "jest-fetch-mock";
-import { authStore } from "../../../testUtils/individualStores";
-import { renderHook, act, waitFor } from "@testing-library/react";
+import { createAuthApiStoreSetup } from "../../../testUtils/storesSetups";
+import authReducer from "../../../store/slices/authSlice";
 
-import { useLoginMutation } from "../../../store/apis/authApi";
+import { authApi, useLoginMutation } from "../../../store/apis/authApi";
 
 import { API_URL } from "../../../constants/urls";
 import {
@@ -10,12 +10,14 @@ import {
   LoginCredentials,
   LoginResultData,
 } from "../../../store/interfaces/authInterfaces";
-import { getWrapper } from "../../../testUtils/functions";
 import {
   fulfilledMutation,
   pendingMutation,
   uninitializedMutation,
 } from "../../../testUtils/mutationObjectStates";
+import { combineReducers } from "@reduxjs/toolkit";
+import { act } from "react-dom/test-utils";
+import { waitFor } from "@testing-library/react";
 
 enableFetchMocks();
 
@@ -56,12 +58,12 @@ describe("Login User", () => {
   });
 
   it("runs the userLoginMutation successfully", async () => {
-    const initialUserInfoState: AuthState = {
+    const initialAuthState: AuthState = {
       tokens: { access: null, refresh: null },
       userInfo: null,
     };
 
-    const expectedUserInfoState: AuthState = {
+    const expectedAuthState: AuthState = {
       tokens: { access: tokenBody.access, refresh: tokenBody.refresh },
       userInfo: {
         id: "1",
@@ -71,12 +73,7 @@ describe("Login User", () => {
       },
     };
 
-    const store = authStore;
-    const wrapper = getWrapper(authStore);
-
-    const { result } = renderHook(() => useLoginMutation(undefined), {
-      wrapper,
-    });
+    const { result, store } = createAuthApiStoreSetup(useLoginMutation);
 
     const [triggerLogin] = result.current;
 
@@ -87,16 +84,15 @@ describe("Login User", () => {
       password: "password",
     };
 
-    const userInfoState = store.getState().auth;
-
-    expect(userInfoState).toEqual(initialUserInfoState);
+    const authState = store.getState().auth;
+    expect(authState).toEqual(initialAuthState);
 
     act(() => {
       triggerLogin(userArgs);
     });
 
     expect(result.current[1]).toMatchObject(pendingMutation("login", userArgs));
-    debugger
+    debugger;
     await waitFor(() => expect(result.current[1].isSuccess).toBe(true));
 
     expect(result.current[1]).toMatchObject(
@@ -104,7 +100,7 @@ describe("Login User", () => {
     );
 
     const newUserInfoState = store.getState().auth;
-    expect(newUserInfoState).toEqual(expectedUserInfoState);
+    expect(newUserInfoState).toEqual(expectedAuthState);
   });
 
   it("fails on login", async () => {
@@ -113,12 +109,7 @@ describe("Login User", () => {
       userInfo: null,
     };
 
-    const store = authStore;
-    const wrapper = getWrapper(authStore);
-
-    const { result } = renderHook(() => useLoginMutation(undefined), {
-      wrapper,
-    });
+    const { result, store } = createAuthApiStoreSetup(useLoginMutation);
 
     const [triggerLogin] = result.current;
 
@@ -129,7 +120,7 @@ describe("Login User", () => {
       password: "password",
     };
 
-    const userInfoState = store.getState().userInfo;
+    const userInfoState = store.getState().auth;
     expect(userInfoState).toEqual(initialUserInfoState);
 
     act(() => {
@@ -160,7 +151,7 @@ describe("Login User", () => {
       },
     });
 
-    const newUserInfoState = store.getState().userInfo;
+    const newUserInfoState = store.getState().auth;
     expect(newUserInfoState).toEqual(initialUserInfoState);
   });
 });
