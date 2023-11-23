@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { Provider } from "react-redux";
-import { mockStoreAuth } from "../../testUtils/mockStores";
+import { mockStoreAuth } from "../../__testUtils__/mockStores";
 import { AuthState } from "../../store/interfaces/authInterfaces";
 import ProtectedComponent from "../../components/ProtectedComponent";
 

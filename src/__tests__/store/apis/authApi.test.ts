@@ -1,10 +1,8 @@
-import fetchMock, { enableFetchMocks } from "jest-fetch-mock";
-import { createAuthApiStoreSetup } from "../../../testUtils/storesSetups";
-import authReducer from "../../../store/slices/authSlice";
+import { createAuthApiStoreSetup } from "../../../__testUtils__/storesSetups";
 
-import { authApi, useLoginMutation } from "../../../store/apis/authApi";
+import { useLoginMutation } from "../../../store/apis/authApi";
+import { setupServer } from 'msw/node'
 
-import { API_URL } from "../../../constants/urls";
 import {
   AuthState,
   LoginCredentials,
@@ -14,16 +12,19 @@ import {
   fulfilledMutation,
   pendingMutation,
   uninitializedMutation,
-} from "../../../testUtils/mutationObjectStates";
-import { combineReducers } from "@reduxjs/toolkit";
+} from "../../../__testUtils__/mutationObjectStates";
 import { act } from "react-dom/test-utils";
 import { waitFor } from "@testing-library/react";
 
-enableFetchMocks();
+import { authApiHandlers } from "../../../__testUtils__/handlers";
 
-beforeEach(() => {
-  fetchMock.resetMocks();
-});
+const server = setupServer(...authApiHandlers)
+
+beforeAll(() => server.listen())
+
+afterEach(() => server.resetHandlers())
+
+afterAll(() => server.close())
 
 describe("Login User", () => {
   const tokenBody: LoginResultData = {
@@ -36,26 +37,6 @@ describe("Login User", () => {
     access: null,
     refresh: null,
   };
-
-  beforeEach(() => {
-    fetchMock.mockIf(`${API_URL}/auth/token`, (req) => {
-      if (req.body) {
-        const username = JSON.parse(req.body.toString()).username;
-
-        if (username === "success") {
-          return Promise.resolve({
-            status: 200,
-            body: JSON.stringify(tokenBody),
-          });
-        }
-      }
-
-      return Promise.resolve({
-        status: 400,
-        body: JSON.stringify(failedBody),
-      });
-    });
-  });
 
   it("runs the userLoginMutation successfully", async () => {
     const initialAuthState: AuthState = {
