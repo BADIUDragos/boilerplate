@@ -17,7 +17,6 @@ const LoginPage: React.FC = () => {
   const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
     triggerLogin({ username, password });
-    navigate("/");
   };
 
   return (

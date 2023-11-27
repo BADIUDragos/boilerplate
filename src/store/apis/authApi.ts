@@ -3,7 +3,7 @@ import { BasicResponse } from "../errorHandling/basicError";
 import {
   BlacklistingRefresh,
   LoginCredentials,
-  LoginResultData,
+  TokensResultData,
 } from "../interfaces/authInterfaces";
 import { logOut, setCredentials } from "../slices/authSlice";
 import { baseApi } from "./baseApi";
@@ -11,9 +11,9 @@ import { baseApi } from "./baseApi";
 const authApi = baseApi.injectEndpoints({
   
   endpoints: (build) => ({
-    login: build.mutation<LoginResultData, LoginCredentials>({
+    login: build.mutation<TokensResultData, LoginCredentials>({
       query: (credentials) => ({
-        url: "/auth/token",
+        url: "/auth/login",
         method: "POST",
         body: credentials,
       }),
@@ -31,7 +31,7 @@ const authApi = baseApi.injectEndpoints({
     }),
     blacklist: build.mutation<BasicResponse, BlacklistingRefresh>({
       query: (refresh) => ({
-        url: "/auth/token/blacklist",
+        url: "/auth/logout",
         method: "POST",
         body: refresh,
       }),

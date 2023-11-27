@@ -4,7 +4,7 @@ import authReducer, {
 } from "../../../store/slices/authSlice";
 import {
   AuthState,
-  LoginResultData,
+  TokensResultData,
   UserInfoState,
 } from "../../../store/interfaces/authInterfaces";
 
@@ -63,8 +63,8 @@ describe("authSlice basic functionalities", () => {
   it("should handle setCredentials and setItem to localstorage", () => {
     jest.spyOn(Storage.prototype, "setItem");
 
-    const tokens: LoginResultData =
-      filledInitialState.tokens as LoginResultData;
+    const tokens: TokensResultData =
+      filledInitialState.tokens as TokensResultData;
     const userInfo: UserInfoState =
       filledInitialState.userInfo as UserInfoState;
 

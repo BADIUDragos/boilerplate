@@ -1,8 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { AuthState, LoginResultData, UserInfoState } from "../interfaces/authInterfaces";
+import { AuthState, TokensResultData, UserInfoState } from "../interfaces/authInterfaces";
 import { decodeTokenAndSetUserInfo } from "../../functions/decoding";
 
-const tokensInitialState: LoginResultData = {
+const tokensInitialState: TokensResultData = {
   access: localStorage.getItem("accessToken") || null,
   refresh: localStorage.getItem("refreshToken") || null,
 }
@@ -19,7 +19,7 @@ const authSlice = createSlice({
     setCredentials(
       state,
       action: PayloadAction<{
-        tokens: LoginResultData;
+        tokens: TokensResultData;
         userInfo: UserInfoState | null;
       }>
     ) {

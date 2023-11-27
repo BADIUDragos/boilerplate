@@ -1,16 +1,17 @@
 export interface AuthState {
-  tokens: LoginResultData | null
+  tokens: TokensResultData | null
   userInfo: UserInfoState | null;
 }
 
 export interface UserInfoState {
-  id: string | null;
-  username: string | null;
-  permissions: string[] | null;
-  isStaff: boolean | null;
+  id: string
+  username: string
+  permissions: string[]
+  email: string
+  isStaff: boolean
 }
 
-export interface LoginResultData {
+export interface TokensResultData {
   access: string | null;
   refresh: string | null;
 }

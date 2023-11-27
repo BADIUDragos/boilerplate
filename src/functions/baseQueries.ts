@@ -6,12 +6,11 @@ import {
 } from "@reduxjs/toolkit/query/react";
 import { setCredentials, logOut } from "../store/slices/authSlice";
 import { RootState } from "../store";
-import { LoginResultData } from "../store/interfaces/authInterfaces";
+import { TokensResultData } from "../store/interfaces/authInterfaces";
 import { decodeTokenAndSetUserInfo } from "./decoding";
 import { API_URL } from "../constants/urls";
 import { Mutex } from "async-mutex";
 import { isTokenInvalidError } from "./typeGuards/isTokenInvalidError";
-import { isTokenBlacklistedError } from "./typeGuards/isTokenBlacklistedError";
 
 const mutex = new Mutex();
 
@@ -32,20 +31,13 @@ export const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, Fetch
   let result = await baseQuery(args, api, extraOptions);
 
   if (result.error) {
-    const isBlacklisting = (api.getState() as RootState).auth.isBlacklistingToken;
-    if (isTokenBlacklistedError(result.error)) {
-      api.dispatch(logOut());
-      return result;
-    } else if (isBlacklisting && result.error.status === 401) {
-      api.dispatch(logOut());
-      return result;
-    } else if (isTokenInvalidError(result.error)) {
+    if (isTokenInvalidError(result.error)) {
       const refresh = (api.getState() as RootState).auth.tokens?.refresh;
       if (!mutex.isLocked()) {
         const release = await mutex.acquire();
         try {
           const refreshResult = await baseQuery({
-            url: '/auth/token/refresh',
+            url: '/auth/login/refresh',
             method: 'POST',
             body: {
               refresh: refresh,
@@ -53,7 +45,7 @@ export const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, Fetch
           }, api, extraOptions);
 
           if (refreshResult.data) {
-            const data = refreshResult.data as LoginResultData;
+            const data = refreshResult.data as TokensResultData;
             api.dispatch(setCredentials({
               tokens: {
                 access: data.access,
