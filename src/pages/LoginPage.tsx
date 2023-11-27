@@ -1,14 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Form, Button, Alert } from "react-bootstrap";
 import FormContainer from "../components/FormContainer";
 
-import { useLoginMutation } from "../store";
+import { useLoginMutation, useUserInfo } from "../store";
 import Loader from "../components/Loader";
 import { useNavigate } from "react-router-dom";
 
 const LoginPage: React.FC = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const userInfo = useUserInfo()
 
   const [triggerLogin, { isLoading, isError, error }] = useLoginMutation();
 
@@ -18,6 +19,12 @@ const LoginPage: React.FC = () => {
     e.preventDefault();
     triggerLogin({ username, password });
   };
+
+  useEffect( () => {
+    if (userInfo){
+      navigate('/')
+    }
+  },[userInfo])
 
   return (
     <FormContainer xs={12} md={6} className="justify-content-md-center">

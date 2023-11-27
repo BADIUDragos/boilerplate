@@ -22,5 +22,5 @@
   },
   "include": [
     "src"
-, "test.environment.ts"  ]
+, "test.environment.ts", "index.tsx"  ]
 }

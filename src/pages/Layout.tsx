@@ -3,13 +3,13 @@ import { Outlet, useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { Container } from "react-bootstrap";
-import { useBlacklistMutation } from "../store";
+import { useLogoutMutation } from "../store";
 import { useEffect } from "react";
 
 const Layout: React.FC = () => {
 
   const navigate = useNavigate()
-  const [blacklistToken] = useBlacklistMutation();
+  const [blacklistToken] = useLogoutMutation();
 
   useEffect(() => {
     const getRefreshToken = () => {

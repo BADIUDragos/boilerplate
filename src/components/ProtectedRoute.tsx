@@ -1,6 +1,5 @@
-import { useSelector } from "react-redux";
-import { RootState } from "../store";
 import { Navigate } from "react-router-dom";
+import { useUserInfo } from "../store";
 
 interface IProtectedRoute {
   children: React.ReactNode;
@@ -15,7 +14,7 @@ const ProtectedRoute: React.FC<IProtectedRoute> = ({
   requiredPermissions = [],
   loginRequired = true,
 }) => {
-  const userInfo = useSelector((state: RootState) => state.auth.userInfo);
+  const userInfo = useUserInfo()
 
   const isAuthorized = userInfo?.isStaff || 
     (!loginRequired || 

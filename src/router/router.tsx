@@ -12,15 +12,10 @@ const router = createBrowserRouter([
     children: [
       { path: "/", element: <HomePage/> },
       { path: "/login", element: <ProtectedRoute redirectUrl={"/"} loginRequired={false}><LoginPage/></ProtectedRoute> },
+      { path: "*", element: <NotFoundPage/> }
     ],
     errorElement: <ErrorPage />,
-  },
-  {
-    path: "*",
-    element: <Layout/>,
-    children: [{ path: "*", element: <NotFoundPage/> }],
-    errorElement: <ErrorPage />,
-  },
+  }
 ]);
 
 export default router;

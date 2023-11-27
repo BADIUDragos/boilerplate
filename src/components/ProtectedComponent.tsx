@@ -1,5 +1,4 @@
-import { useSelector } from "react-redux";
-import { RootState } from "../store";
+import { useUserInfo } from "../store";
 
 interface IProtectedComponent {
   children: React.ReactNode;
@@ -12,7 +11,7 @@ const ProtectedComponent: React.FC<IProtectedComponent> = ({
   requiredPermissions = [],
   loginRequired = true,
 }) => {
-  const userInfo = useSelector((state: RootState) => state.auth.userInfo);
+  const userInfo = useUserInfo()
 
   const isAuthorized = userInfo?.isStaff || 
     (!loginRequired || 

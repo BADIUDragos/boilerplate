@@ -1,4 +1,4 @@
-import { decodeTokenAndSetUserInfo } from "../../functions/decoding";
+import { SerializedError } from "@reduxjs/toolkit";
 import { BasicResponse } from "../errorHandling/basicError";
 import {
   BlacklistingRefresh,
@@ -20,14 +20,12 @@ const authApi = baseApi.injectEndpoints({
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;
-          dispatch(setCredentials({
-            tokens: { access: data.access, refresh: data.refresh }
-          }));
+          dispatch(setCredentials({tokens: data}));
         } catch (error: any) {
         }
       },
     }),
-    blacklist: build.mutation<BasicResponse, BlacklistingRefresh>({
+    logout: build.mutation<BasicResponse | SerializedError, BlacklistingRefresh>({
       query: (refresh) => ({
         url: "/auth/logout",
         method: "POST",
@@ -44,5 +42,5 @@ const authApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { useLoginMutation, useBlacklistMutation } = authApi;
+export const { useLoginMutation, useLogoutMutation } = authApi;
 export { authApi };

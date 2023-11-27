@@ -1,6 +1,6 @@
 import { Navbar, Container, Nav } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
-import { RootState, useBlacklistMutation } from "../store";
+import { RootState, useLogoutMutation } from "../store";
 import { useSelector } from "react-redux";
 
 interface IHeader {
@@ -13,7 +13,7 @@ const Header: React.FC<IHeader> = ({ className }) => {
   const { userInfo } = auth;
   const refresh = useSelector((state: RootState) => state.auth.tokens?.refresh);
 
-  const [blacklistToken] = useBlacklistMutation();
+  const [blacklistToken] = useLogoutMutation();
 
   const handleLogout = async () => {
     if (refresh) {

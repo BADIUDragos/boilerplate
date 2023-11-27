@@ -5,7 +5,7 @@ import {
   fetchBaseQuery,
 } from "@reduxjs/toolkit/query/react";
 import { setCredentials, logOut } from "../store/slices/authSlice";
-import { RootState } from "../store";
+import { RootState } from "../..";
 import { TokensResultData } from "../store/interfaces/authInterfaces";
 import { API_URL } from "../constants/urls";
 import { Mutex } from "async-mutex";
