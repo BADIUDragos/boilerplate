@@ -12,8 +12,8 @@ export interface UserInfoState {
 }
 
 export interface TokensResultData {
-  access: string | null;
-  refresh: string | null;
+  access: string
+  refresh: string
 }
 
 export interface LoginCredentials {

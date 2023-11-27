@@ -20,10 +20,8 @@ const authApi = baseApi.injectEndpoints({
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;
-          const userInfo = data.access ? decodeTokenAndSetUserInfo(data.access) : null;
           dispatch(setCredentials({
-            tokens: { access: data.access, refresh: data.refresh },
-            userInfo: userInfo,
+            tokens: { access: data.access, refresh: data.refresh }
           }));
         } catch (error: any) {
         }

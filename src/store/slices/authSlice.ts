@@ -1,10 +1,10 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { AuthState, TokensResultData, UserInfoState } from "../interfaces/authInterfaces";
+import { AuthState, TokensResultData } from "../interfaces/authInterfaces";
 import { decodeTokenAndSetUserInfo } from "../../functions/decoding";
 
 const tokensInitialState: TokensResultData = {
-  access: localStorage.getItem("accessToken") || null,
-  refresh: localStorage.getItem("refreshToken") || null,
+  access: localStorage.getItem("accessToken") || "",
+  refresh: localStorage.getItem("refreshToken") || "",
 }
 
 const initialState: AuthState = {
@@ -20,15 +20,12 @@ const authSlice = createSlice({
       state,
       action: PayloadAction<{
         tokens: TokensResultData;
-        userInfo: UserInfoState | null;
       }>
     ) {
       state.tokens = action.payload.tokens;
-      state.userInfo = action.payload.userInfo;
-      if (action.payload.tokens.access && action.payload.tokens.refresh) {
-        localStorage.setItem("accessToken", action.payload.tokens.access);
-        localStorage.setItem("refreshToken", action.payload.tokens.refresh);
-      }      
+      state.userInfo = decodeTokenAndSetUserInfo(state.tokens.access)
+      localStorage.setItem("accessToken", state.tokens.access);
+      localStorage.setItem("refreshToken", state.tokens.refresh);
     },
     logOut(state) {
       state.tokens = null;

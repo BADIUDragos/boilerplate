@@ -7,7 +7,6 @@ import {
 import { setCredentials, logOut } from "../store/slices/authSlice";
 import { RootState } from "../store";
 import { TokensResultData } from "../store/interfaces/authInterfaces";
-import { decodeTokenAndSetUserInfo } from "./decoding";
 import { API_URL } from "../constants/urls";
 import { Mutex } from "async-mutex";
 import { isTokenInvalidError } from "./typeGuards/isTokenInvalidError";
@@ -50,8 +49,7 @@ export const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, Fetch
               tokens: {
                 access: data.access,
                 refresh: data.refresh,
-              },
-              userInfo: data.access ? decodeTokenAndSetUserInfo(data.access) : null,
+              }
             }));
             result = await baseQuery(args, api, extraOptions);
           } else {
