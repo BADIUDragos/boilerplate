@@ -3,7 +3,7 @@ import { setupListeners } from '@reduxjs/toolkit/query';
 import { rootReducer, RootState } from './combinedReducer';
 import { authApi, useLogoutMutation, useLoginMutation } from './apis/authApi';
 
-import { useUserInfo } from './hooks/useUserInfo'
+import { useUserInfo, useTokens } from './hooks/authSliceHooks'
 
 const store = configureStore({
   reducer: rootReducer,
@@ -19,5 +19,5 @@ export type { RootState }
 
 export { useLoginMutation, useLogoutMutation };
 
-export { useUserInfo }
+export { useUserInfo, useTokens }
 export default store;
