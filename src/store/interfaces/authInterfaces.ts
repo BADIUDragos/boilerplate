@@ -8,7 +8,7 @@ export interface UserInfoState {
   username: string
   permissions: string[]
   email: string
-  isStaff: boolean
+  isSuperuser: boolean
 }
 
 export interface TokensState {

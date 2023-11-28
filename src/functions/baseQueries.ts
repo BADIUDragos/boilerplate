@@ -32,7 +32,6 @@ export const baseQueryWithReauth: BaseQueryFn<
 > = async (args, api, extraOptions) => {
   await mutex.waitForUnlock();
   let result = await baseQuery(args, api, extraOptions);
-
   if (result.error && isTokenInvalidError(result.error)) {
     const refresh = (api.getState() as RootState).auth.tokens?.refresh;
     if (!mutex.isLocked()) {
@@ -68,7 +67,7 @@ export const baseQueryWithReauth: BaseQueryFn<
       await mutex.waitForUnlock();
       result = await baseQuery(args, api, extraOptions);
     }
-  }
+  } 
 
   return result;
 };

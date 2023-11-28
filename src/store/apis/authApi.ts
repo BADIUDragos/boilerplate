@@ -10,7 +10,6 @@ import { logOut, setCredentials } from "../slices/authSlice";
 import { baseApi } from "./baseApi";
 
 const authApi = baseApi.injectEndpoints({
-  
   endpoints: (build) => ({
     login: build.mutation<TokensState, LoginCredentials>({
       query: (credentials) => ({

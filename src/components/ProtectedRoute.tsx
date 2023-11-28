@@ -5,21 +5,23 @@ interface IProtectedRoute {
   children: React.ReactNode;
   redirectUrl?: string;
   requiredPermissions?: string[];
-  loginRequired?: boolean;
+  admin?: boolean;
 }
 
 const ProtectedRoute: React.FC<IProtectedRoute> = ({
   children,
   redirectUrl = "/login",
   requiredPermissions = [],
-  loginRequired = true,
+  admin = false,
 }) => {
-  const userInfo = useUserInfo()
+  const userInfo = useUserInfo();
 
-  const isAuthorized = userInfo?.isStaff || 
-    (!loginRequired || 
-     (userInfo && requiredPermissions.every(permission => userInfo.permissions?.includes(permission))));
-
+  const isAuthorized =
+    (admin && userInfo?.isSuperuser) ||
+    (userInfo &&
+      requiredPermissions.every((permission) =>
+        userInfo.permissions?.includes(permission)
+      ));
 
   return isAuthorized ? <>{children}</> : <Navigate to={redirectUrl} />;
 };

@@ -16,3 +16,4 @@ export function isErrorWithMessage(
     typeof (error as any).message === 'string'
   )
 }
+

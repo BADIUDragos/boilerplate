@@ -3,19 +3,18 @@ import { useUserInfo } from "../store";
 interface IProtectedComponent {
   children: React.ReactNode;
   requiredPermissions?: string[];
-  loginRequired?: boolean;
+  admin?: boolean
 }
 
 const ProtectedComponent: React.FC<IProtectedComponent> = ({
   children,
   requiredPermissions = [],
-  loginRequired = true,
+  admin = false,
 }) => {
   const userInfo = useUserInfo()
 
-  const isAuthorized = userInfo?.isStaff || 
-    (!loginRequired || 
-     (userInfo && requiredPermissions.every(permission => userInfo.permissions?.includes(permission))));
+  const isAuthorized = (admin && userInfo?.isSuperuser) ||
+    (!admin && userInfo && requiredPermissions.every(permission => userInfo.permissions?.includes(permission)));
 
   return isAuthorized ? <>{children}</> : null;
 };
