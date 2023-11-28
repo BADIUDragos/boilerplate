@@ -5,8 +5,8 @@ import {
   fetchBaseQuery,
 } from "@reduxjs/toolkit/query/react";
 import { setCredentials, logOut } from "../store/slices/authSlice";
-import { RootState } from "../..";
-import { TokensResultData } from "../store/interfaces/authInterfaces";
+import { RootState } from "../store";
+import { TokensState } from "../store/interfaces/authInterfaces";
 import { API_URL } from "../constants/urls";
 import { Mutex } from "async-mutex";
 import { isTokenInvalidError } from "./typeGuards/isTokenInvalidError";
@@ -25,43 +25,48 @@ export const baseQuery = fetchBaseQuery({
   },
 });
 
-export const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> = async (args, api, extraOptions) => {
+export const baseQueryWithReauth: BaseQueryFn<
+  string | FetchArgs,
+  unknown,
+  FetchBaseQueryError
+> = async (args, api, extraOptions) => {
   await mutex.waitForUnlock();
   let result = await baseQuery(args, api, extraOptions);
 
-  if (result.error) {
-    if (isTokenInvalidError(result.error)) {
-      const refresh = (api.getState() as RootState).auth.tokens?.refresh;
-      if (!mutex.isLocked()) {
-        const release = await mutex.acquire();
-        try {
-          const refreshResult = await baseQuery({
-            url: '/auth/login/refresh',
-            method: 'POST',
+  if (result.error && isTokenInvalidError(result.error)) {
+    const refresh = (api.getState() as RootState).auth.tokens?.refresh;
+    if (!mutex.isLocked()) {
+      const release = await mutex.acquire();
+      try {
+        const refreshResult = await baseQuery(
+          {
+            url: "/auth/login/refresh",
+            method: "POST",
             body: {
               refresh: refresh,
             },
-          }, api, extraOptions);
+          },
+          api,
+          extraOptions
+        );
 
-          if (refreshResult.data) {
-            const data = refreshResult.data as TokensResultData;
-            api.dispatch(setCredentials({
-              tokens: {
-                access: data.access,
-                refresh: data.refresh,
-              }
-            }));
-            result = await baseQuery(args, api, extraOptions);
-          } else {
-            api.dispatch(logOut());
-          }
-        } finally {
-          release();
+        if (refreshResult.data) {
+          const data = refreshResult.data as TokensState;
+          api.dispatch(
+            setCredentials({
+              tokens: data
+            })
+          );
+          result = await baseQuery(args, api, extraOptions);
+        } else {
+          api.dispatch(logOut());
         }
-      } else {
-        await mutex.waitForUnlock();
-        result = await baseQuery(args, api, extraOptions);
+      } finally {
+        release();
       }
+    } else {
+      await mutex.waitForUnlock();
+      result = await baseQuery(args, api, extraOptions);
     }
   }
 

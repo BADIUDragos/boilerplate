@@ -4,7 +4,7 @@ import "./bootstrap.css";
 import router from "./router/router";
 import Idle from "idle-js"
 
-import { useLogoutMutation, useTokens } from "./store";
+import { useLogoutMutation, useTokens, useValidateQuery } from "./store";
 import { useEffect } from "react";
 
 export default function App() {

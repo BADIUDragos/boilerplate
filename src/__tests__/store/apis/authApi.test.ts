@@ -6,7 +6,7 @@ import { setupServer } from 'msw/node'
 import {
   AuthState,
   LoginCredentials,
-  TokensResultData,
+  TokensState,
 } from "../../../store/interfaces/authInterfaces";
 import {
   fulfilledMutation,
@@ -27,13 +27,13 @@ afterEach(() => server.resetHandlers())
 afterAll(() => server.close())
 
 describe("Login User", () => {
-  const tokenBody: TokensResultData = {
+  const tokenBody: TokensState = {
     access:
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJ1c2VybmFtZSI6InVzZXIiLCJwZXJtaXNzaW9ucyI6WyJ2aWV3X2NvbnRlbnQiXSwiaXNTdGFmZiI6ZmFsc2V9.obYAd0EK9QcZLdX3cDRNSRf2bvo7sw_O0J3qsiJ1w_A",
     refresh: "refresh",
   };
 
-  const failedBody: TokensResultData = {
+  const failedBody: TokensState = {
     access: null,
     refresh: null,
   };

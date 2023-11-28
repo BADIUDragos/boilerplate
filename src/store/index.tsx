@@ -1,7 +1,7 @@
 import { configureStore, ThunkDispatch, AnyAction } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
 import { rootReducer, RootState } from './combinedReducer';
-import { authApi, useLogoutMutation, useLoginMutation } from './apis/authApi';
+import { authApi, useLogoutMutation, useValidateQuery, useLoginMutation } from './apis/authApi';
 
 import { useUserInfo, useTokens } from './hooks/authSliceHooks'
 
@@ -17,7 +17,7 @@ setupListeners(store.dispatch);
 export type AppDispatch = ThunkDispatch<RootState, unknown, AnyAction>;
 export type { RootState }
 
-export { useLoginMutation, useLogoutMutation };
+export { useLoginMutation, useValidateQuery, useLogoutMutation };
 
 export { useUserInfo, useTokens }
 export default store;

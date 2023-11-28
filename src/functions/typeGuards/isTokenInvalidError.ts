@@ -1,13 +1,12 @@
+import { SerializedError } from "@reduxjs/toolkit";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query";
+
 interface TokenInvalidError {
   status: number;
   data: {
     detail: string;
     code: string;
-    messages: Array<{
-      message: string;
-      token_class: string;
-      token_type: string;
-    }>;
+    messages: TokenInvalidErrorMessage
   };
 }
 
@@ -17,15 +16,18 @@ interface TokenInvalidErrorMessage {
   token_type: string;
 }
 
-export function isTokenInvalidError(error: any): error is TokenInvalidError {
+export function isTokenInvalidError(error: FetchBaseQueryError | SerializedError): boolean {
   return (
     typeof error === 'object' &&
-    error !== null &&
+    'status' in error &&
     error.status === 401 &&
     'data' in error &&
+    error.data !== null &&
+    typeof error.data === 'object' &&
     'detail' in error.data &&
     error.data.detail === "Given token not valid for any token type" &&
+    'messages' in error.data &&
     Array.isArray(error.data.messages) &&
-    error.data.messages.some((message: TokenInvalidErrorMessage) => message.token_type === 'access')
+    error.data.messages.some(msg => msg.token_type === 'access')
   );
 }

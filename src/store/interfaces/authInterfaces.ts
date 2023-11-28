@@ -1,5 +1,5 @@
 export interface AuthState {
-  tokens: TokensResultData | null
+  tokens: TokensState | null
   userInfo: UserInfoState | null;
 }
 
@@ -11,7 +11,7 @@ export interface UserInfoState {
   isStaff: boolean
 }
 
-export interface TokensResultData {
+export interface TokensState {
   access: string
   refresh: string
 }
@@ -21,6 +21,10 @@ export interface LoginCredentials {
   password: string;
 }
 
-export interface BlacklistingRefresh {
+export interface AccessToken {
+  access: string
+}
+
+export interface RefreshToken {
   refresh: string
 }

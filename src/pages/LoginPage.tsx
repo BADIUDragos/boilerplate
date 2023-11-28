@@ -24,7 +24,7 @@ const LoginPage: React.FC = () => {
     if (userInfo){
       navigate('/')
     }
-  },[userInfo])
+  },[userInfo]) 
 
   return (
     <FormContainer xs={12} md={6} className="justify-content-md-center">
