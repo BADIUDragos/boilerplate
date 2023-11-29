@@ -9,7 +9,7 @@ import { RootState } from "../store";
 import { TokensState } from "../store/interfaces/authInterfaces";
 import { API_URL } from "../constants/urls";
 import { Mutex } from "async-mutex";
-import { isTokenInvalidError } from "./typeGuards/isTokenInvalidError";
+import isTokenInvalidError from "./typeGuards/isTokenInvalidError";
 
 const mutex = new Mutex();
 
