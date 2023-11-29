@@ -1,4 +1,5 @@
 import { useUserInfo } from "../store";
+import isAuthorized from "./utils/isAuthorized";
 
 interface IProtectedComponent {
   children: React.ReactNode;
@@ -11,12 +12,10 @@ const ProtectedComponent: React.FC<IProtectedComponent> = ({
   requiredPermissions = [],
   admin = false,
 }) => {
+  
   const userInfo = useUserInfo()
 
-  const isAuthorized = (admin && userInfo?.isSuperuser) ||
-    (!admin && userInfo && requiredPermissions.every(permission => userInfo.permissions?.includes(permission)));
-
-  return isAuthorized ? <>{children}</> : null;
+  return isAuthorized(admin, userInfo, requiredPermissions) ? <>{children}</> : null;
 };
 
 export default ProtectedComponent;

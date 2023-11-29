@@ -1,5 +1,6 @@
 import { Navigate } from "react-router-dom";
 import { useUserInfo } from "../store";
+import isAuthorized from "./utils/isAuthorized";
 
 interface IProtectedRoute {
   children: React.ReactNode;
@@ -16,14 +17,7 @@ const ProtectedRoute: React.FC<IProtectedRoute> = ({
 }) => {
   const userInfo = useUserInfo();
 
-  const isAuthorized =
-    (admin && userInfo?.isSuperuser) ||
-    (userInfo &&
-      requiredPermissions.every((permission) =>
-        userInfo.permissions?.includes(permission)
-      ));
-
-  return isAuthorized ? <>{children}</> : <Navigate to={redirectUrl} />;
+  return isAuthorized(admin, userInfo, requiredPermissions) ? <>{children}</> : <Navigate to={redirectUrl} />;
 };
 
 export default ProtectedRoute;
